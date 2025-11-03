@@ -1,17 +1,8 @@
-# Angular 20 — User Management Portal
+# User Management Portal
 
-A complete starter showcasing:
-- Standalone components, routing, `@if` / `@for`
-- HttpClient service + **signals** for state (users, loading, error, pagination, query)
-- Reactive Forms (add/edit) with validation
-- Custom **Directive** (hover highlight) & **Pipe** (email domain)
-- Debounced **search** with RxJS → signal
-- Bonus: pagination, theme toggle, API retry, simple autosave effect
 
 ## Quickstart
-
 ```bash
-  
 npm i
 npm start
 # open http://localhost:4200

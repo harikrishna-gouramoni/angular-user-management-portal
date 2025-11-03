@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { UserService, User } from '../../services/user.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-user-form',
@@ -54,7 +55,8 @@ export class UserFormComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private svc: UserService
+    private svc: UserService,
+    private toast: ToastService
   ) {
     this.form = this.fb.group({
       id: [0],
@@ -68,22 +70,24 @@ export class UserFormComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.isEdit = !!id;
-    if (this.isEdit) {
-      const u = this.svc.getById(id);
-      if (u) this.form.patchValue(u);
-    }
-
-    // autosave (bonus): log form value when valid
     effect(() => {
+      if (this.isEdit && id) {
+        const u = this.svc.getById(id);
+        if (u) {
+          this.form.patchValue(u);
+        } else {
+          this.form.reset({ id, name: '', email: '', phone: '', company: '' });
+        }
+      } else {
+        this.form.reset({ id: 0, name: '', email: '', phone: '', company: '' });
+      }
       if (this.form.valid) {
         console.debug('[Autosave preview]', this.form.value);
       }
     });
   }
 
-  // ...existing code...
-
-  // Ensure nulls are converted to undefined before update
+   
   updateUser(id: number, data: any) {
     const cleanData = { ...data };
     Object.keys(cleanData).forEach(key => {
@@ -104,11 +108,11 @@ export class UserFormComponent implements OnInit {
         phone: data.phone ?? undefined,
         company: data.company ?? undefined
       };
-      this.svc.update(id, cleanData);
-      alert('User updated!');
+  this.svc.update(id, cleanData);
+  this.toast.show('User updated successfully!', 'success');
     } else {
-      this.svc.add(data as any);
-      alert('User created!');
+  this.svc.add(data as any);
+  this.toast.show('User created successfully!', 'success');
     }
     this.router.navigate(['/users']);
   }

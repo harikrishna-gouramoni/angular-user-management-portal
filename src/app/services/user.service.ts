@@ -50,11 +50,11 @@ export class UserService {
     this.loading.set(true);
     this.error.set(null);
 
+    // Always use API unless useMock is true
     const source$ = useMock
       ? this.http.get<User[]>('/assets/users.json').pipe(delay(300))
       : this.http.get<User[]>(this.api).pipe(
-          // example: retry network errors up to 2 times
-          retry(2)
+          retry(2) // retry network errors up to 2 times
         );
 
     source$
